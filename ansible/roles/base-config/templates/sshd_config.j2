@@ -1,0 +1,55 @@
+#--------------------------------------------------------------
+# SSH Server Configuration - Managed by Ansible
+#--------------------------------------------------------------
+# Do not edit manually - changes will be overwritten
+
+Port {{ ssh_port }}
+Protocol 2
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+
+# Logging
+SyslogFacility AUTH
+LogLevel INFO
+
+# Authentication
+LoginGraceTime 60
+PermitRootLogin {{ ssh_permit_root_login }}
+StrictModes yes
+MaxAuthTries {{ ssh_max_auth_tries }}
+MaxSessions 10
+
+PubkeyAuthentication {{ ssh_pubkey_authentication }}
+AuthorizedKeysFile .ssh/authorized_keys
+
+PasswordAuthentication {{ ssh_password_authentication }}
+PermitEmptyPasswords no
+ChallengeResponseAuthentication no
+
+# Kerberos options
+KerberosAuthentication no
+
+# GSSAPI options
+GSSAPIAuthentication no
+
+UsePAM yes
+
+# Forwarding
+AllowAgentForwarding yes
+AllowTcpForwarding yes
+X11Forwarding {{ ssh_x11_forwarding }}
+
+# Keep alive
+ClientAliveInterval {{ ssh_client_alive_interval }}
+ClientAliveCountMax {{ ssh_client_alive_count_max }}
+
+# Environment
+AcceptEnv LANG LC_*
+
+# Subsystem
+Subsystem sftp /usr/lib/openssh/sftp-server
+
+# Deny users/groups (uncomment and configure as needed)
+# DenyUsers root
+# DenyGroups nogroup

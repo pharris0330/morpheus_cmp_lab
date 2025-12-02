@@ -1,0 +1,65 @@
+---
+#--------------------------------------------------------------
+# Site Playbook - Main Orchestration
+#--------------------------------------------------------------
+# This playbook orchestrates the execution of all roles
+# Usage: ansible-playbook -i inventory playbooks/site.yml
+
+- name: Apply base configuration to all hosts
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+  vars:
+    environment: "{{ env | default('dev') }}"
+
+  pre_tasks:
+    - name: Display playbook start
+      ansible.builtin.debug:
+        msg: "Starting configuration for {{ inventory_hostname }} in {{ environment }} environment"
+
+    - name: Gather package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+  roles:
+    - role: base-config
+      tags:
+        - base
+        - always
+
+  post_tasks:
+    - name: Display base configuration complete
+      ansible.builtin.debug:
+        msg: "Base configuration complete for {{ inventory_hostname }}"
+
+
+- name: Configure web servers
+  hosts: webservers
+  become: yes
+  gather_facts: yes
+
+  vars:
+    environment: "{{ env | default('dev') }}"
+
+  roles:
+    - role: web-server
+      tags:
+        - web
+        - nginx
+
+  post_tasks:
+    - name: Verify web server is responding
+      ansible.builtin.uri:
+        url: "http://localhost/health"
+        return_content: yes
+      register: health_check
+      failed_when: "'healthy' not in health_check.content"
+      tags:
+        - verify
+
+    - name: Display web server status
+      ansible.builtin.debug:
+        msg: "Web server is healthy on {{ inventory_hostname }}"
+      tags:
+        - verify

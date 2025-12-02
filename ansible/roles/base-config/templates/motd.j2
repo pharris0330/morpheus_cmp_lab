@@ -1,0 +1,18 @@
+###############################################################
+#                                                             #
+#   {{ org_name | center(55) }}   #
+#                                                             #
+###############################################################
+
+  Hostname    : {{ ansible_hostname }}
+  Environment : {{ environment | upper }}
+  OS          : {{ ansible_distribution }} {{ ansible_distribution_version }}
+  Kernel      : {{ ansible_kernel }}
+  IP Address  : {{ ansible_default_ipv4.address | default('N/A') }}
+
+  Managed by  : Ansible / Morpheus CMP
+  Contact     : {{ org_contact }}
+
+###############################################################
+#  Unauthorized access is prohibited. All activity monitored. #
+###############################################################

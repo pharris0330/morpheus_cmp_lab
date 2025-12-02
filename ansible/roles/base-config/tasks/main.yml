@@ -1,0 +1,145 @@
+---
+#--------------------------------------------------------------
+# Base Configuration Role - Core Tasks
+#--------------------------------------------------------------
+
+- name: Display target host information
+  ansible.builtin.debug:
+    msg: "Configuring {{ inventory_hostname }} in {{ environment | default('unknown') }} environment"
+
+#--------------------------------------------------------------
+# System Updates
+#--------------------------------------------------------------
+
+- name: Update apt cache (Debian/Ubuntu)
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  when: ansible_os_family == "Debian"
+
+- name: Update yum cache (RedHat/CentOS)
+  ansible.builtin.yum:
+    update_cache: yes
+  when: ansible_os_family == "RedHat"
+
+#--------------------------------------------------------------
+# Essential Packages
+#--------------------------------------------------------------
+
+- name: Install essential packages (Debian/Ubuntu)
+  ansible.builtin.apt:
+    name: "{{ base_packages_debian }}"
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Install essential packages (RedHat/CentOS)
+  ansible.builtin.yum:
+    name: "{{ base_packages_redhat }}"
+    state: present
+  when: ansible_os_family == "RedHat"
+
+#--------------------------------------------------------------
+# Time Configuration
+#--------------------------------------------------------------
+
+- name: Set timezone
+  ansible.builtin.timezone:
+    name: "{{ system_timezone }}"
+
+- name: Install and configure NTP
+  ansible.builtin.apt:
+    name: chrony
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Ensure chrony is running
+  ansible.builtin.service:
+    name: chrony
+    state: started
+    enabled: yes
+  when: ansible_os_family == "Debian"
+
+#--------------------------------------------------------------
+# User Configuration
+#--------------------------------------------------------------
+
+- name: Create admin group
+  ansible.builtin.group:
+    name: "{{ admin_group }}"
+    state: present
+
+- name: Create service accounts
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    groups: "{{ item.groups | default(omit) }}"
+    shell: "{{ item.shell | default('/bin/bash') }}"
+    create_home: "{{ item.create_home | default(true) }}"
+    state: present
+  loop: "{{ service_accounts }}"
+  when: service_accounts is defined
+
+#--------------------------------------------------------------
+# SSH Configuration
+#--------------------------------------------------------------
+
+- name: Configure SSH daemon
+  ansible.builtin.template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: '0644'
+    validate: '/usr/sbin/sshd -t -f %s'
+  notify: Restart SSH
+
+#--------------------------------------------------------------
+# Security Hardening
+#--------------------------------------------------------------
+
+- name: Set proper permissions on /etc/passwd
+  ansible.builtin.file:
+    path: /etc/passwd
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Set proper permissions on /etc/shadow
+  ansible.builtin.file:
+    path: /etc/shadow
+    owner: root
+    group: shadow
+    mode: '0640'
+
+- name: Disable core dumps
+  ansible.builtin.lineinfile:
+    path: /etc/security/limits.conf
+    line: "* hard core 0"
+    state: present
+
+#--------------------------------------------------------------
+# Message of the Day
+#--------------------------------------------------------------
+
+- name: Configure MOTD
+  ansible.builtin.template:
+    src: motd.j2
+    dest: /etc/motd
+    owner: root
+    group: root
+    mode: '0644'
+
+#--------------------------------------------------------------
+# Logging Configuration
+#--------------------------------------------------------------
+
+- name: Ensure rsyslog is installed
+  ansible.builtin.apt:
+    name: rsyslog
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Ensure rsyslog is running
+  ansible.builtin.service:
+    name: rsyslog
+    state: started
+    enabled: yes

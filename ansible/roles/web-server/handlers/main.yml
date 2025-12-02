@@ -1,0 +1,46 @@
+---
+#--------------------------------------------------------------
+# Web Server Role - Handlers
+#--------------------------------------------------------------
+
+- name: Start Nginx
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Stop Nginx
+  ansible.builtin.service:
+    name: nginx
+    state: stopped
+
+- name: Restart Nginx
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
+
+- name: Reload Nginx
+  ansible.builtin.service:
+    name: nginx
+    state: reloaded
+
+- name: Start Apache
+  ansible.builtin.service:
+    name: "{{ 'apache2' if ansible_os_family == 'Debian' else 'httpd' }}"
+    state: started
+    enabled: yes
+
+- name: Stop Apache
+  ansible.builtin.service:
+    name: "{{ 'apache2' if ansible_os_family == 'Debian' else 'httpd' }}"
+    state: stopped
+
+- name: Restart Apache
+  ansible.builtin.service:
+    name: "{{ 'apache2' if ansible_os_family == 'Debian' else 'httpd' }}"
+    state: restarted
+
+- name: Reload Apache
+  ansible.builtin.service:
+    name: "{{ 'apache2' if ansible_os_family == 'Debian' else 'httpd' }}"
+    state: reloaded

@@ -1,0 +1,41 @@
+---
+#--------------------------------------------------------------
+# Web Server Role - Default Variables
+#--------------------------------------------------------------
+
+# Web server type: nginx or apache
+web_server_type: "nginx"
+
+# Web root directory
+web_root: "/var/www/html"
+
+# Web server user/group
+web_user: "www-data"
+web_group: "www-data"
+
+# Server name
+server_name: "{{ ansible_fqdn }}"
+
+# Ports
+http_port: 80
+https_port: 443
+
+# SSL Configuration
+enable_ssl: false
+use_self_signed_cert: true
+
+# Firewall
+enable_firewall: true
+
+# Nginx specific settings
+nginx_worker_processes: "auto"
+nginx_worker_connections: 1024
+nginx_keepalive_timeout: 65
+nginx_client_max_body_size: "10M"
+
+# Organization info
+org_name: "Morpheus Lab"
+
+# Application info (for index page)
+app_name: "Morpheus Automation Lab"
+app_version: "1.0.0"

@@ -1,0 +1,36 @@
+#--------------------------------------------------------------
+# Example Inventory File
+#--------------------------------------------------------------
+# Copy this to 'inventory' and update with your hosts
+# Usage: ansible-playbook -i inventory site.yml
+
+[all:vars]
+ansible_user=ubuntu
+ansible_ssh_private_key_file=~/.ssh/id_rsa
+environment=dev
+
+[webservers]
+web-01 ansible_host=192.168.1.10
+web-02 ansible_host=192.168.1.11
+
+[appservers]
+app-01 ansible_host=192.168.1.20
+
+[dbservers]
+db-01 ansible_host=192.168.1.30
+
+# Group variables
+[webservers:vars]
+web_server_type=nginx
+enable_ssl=false
+
+[appservers:vars]
+app_port=8080
+
+#--------------------------------------------------------------
+# Dynamic Inventory Placeholder
+#--------------------------------------------------------------
+# For Morpheus integration, use a dynamic inventory script:
+# ansible-playbook -i morpheus_inventory.py site.yml
+#
+# Or configure ansible.cfg to use Morpheus inventory plugin

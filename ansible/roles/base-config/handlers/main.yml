@@ -1,0 +1,24 @@
+---
+#--------------------------------------------------------------
+# Base Configuration Role - Handlers
+#--------------------------------------------------------------
+
+- name: Restart SSH
+  ansible.builtin.service:
+    name: sshd
+    state: restarted
+
+- name: Reload SSH
+  ansible.builtin.service:
+    name: sshd
+    state: reloaded
+
+- name: Restart rsyslog
+  ansible.builtin.service:
+    name: rsyslog
+    state: restarted
+
+- name: Restart chrony
+  ansible.builtin.service:
+    name: chrony
+    state: restarted

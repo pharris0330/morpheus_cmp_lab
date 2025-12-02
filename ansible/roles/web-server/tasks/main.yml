@@ -1,0 +1,215 @@
+---
+#--------------------------------------------------------------
+# Web Server Role - Core Tasks
+#--------------------------------------------------------------
+
+- name: Display web server configuration info
+  ansible.builtin.debug:
+    msg: "Installing {{ web_server_type }} on {{ inventory_hostname }}"
+
+#--------------------------------------------------------------
+# Nginx Installation (Default)
+#--------------------------------------------------------------
+
+- name: Install Nginx (Debian/Ubuntu)
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+  when:
+    - web_server_type == "nginx"
+    - ansible_os_family == "Debian"
+  notify: Start Nginx
+
+- name: Install Nginx (RedHat/CentOS)
+  ansible.builtin.yum:
+    name: nginx
+    state: present
+  when:
+    - web_server_type == "nginx"
+    - ansible_os_family == "RedHat"
+  notify: Start Nginx
+
+#--------------------------------------------------------------
+# Apache Installation (Alternative)
+#--------------------------------------------------------------
+
+- name: Install Apache (Debian/Ubuntu)
+  ansible.builtin.apt:
+    name: apache2
+    state: present
+  when:
+    - web_server_type == "apache"
+    - ansible_os_family == "Debian"
+  notify: Start Apache
+
+- name: Install Apache (RedHat/CentOS)
+  ansible.builtin.yum:
+    name: httpd
+    state: present
+  when:
+    - web_server_type == "apache"
+    - ansible_os_family == "RedHat"
+  notify: Start Apache
+
+#--------------------------------------------------------------
+# Nginx Configuration
+#--------------------------------------------------------------
+
+- name: Create Nginx configuration
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: '0644'
+  when: web_server_type == "nginx"
+  notify: Reload Nginx
+
+- name: Create default site configuration
+  ansible.builtin.template:
+    src: default-site.conf.j2
+    dest: /etc/nginx/sites-available/default
+    owner: root
+    group: root
+    mode: '0644'
+  when:
+    - web_server_type == "nginx"
+    - ansible_os_family == "Debian"
+  notify: Reload Nginx
+
+- name: Enable default site
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/default
+    dest: /etc/nginx/sites-enabled/default
+    state: link
+  when:
+    - web_server_type == "nginx"
+    - ansible_os_family == "Debian"
+  notify: Reload Nginx
+
+#--------------------------------------------------------------
+# Web Root Setup
+#--------------------------------------------------------------
+
+- name: Create web root directory
+  ansible.builtin.file:
+    path: "{{ web_root }}"
+    state: directory
+    owner: "{{ web_user }}"
+    group: "{{ web_group }}"
+    mode: '0755'
+
+- name: Deploy default index page
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: "{{ web_root }}/index.html"
+    owner: "{{ web_user }}"
+    group: "{{ web_group }}"
+    mode: '0644'
+
+#--------------------------------------------------------------
+# Firewall Configuration
+#--------------------------------------------------------------
+
+- name: Install UFW (Debian/Ubuntu)
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Allow HTTP through firewall
+  community.general.ufw:
+    rule: allow
+    port: "80"
+    proto: tcp
+  when:
+    - ansible_os_family == "Debian"
+    - enable_firewall | bool
+  ignore_errors: yes
+
+- name: Allow HTTPS through firewall
+  community.general.ufw:
+    rule: allow
+    port: "443"
+    proto: tcp
+  when:
+    - ansible_os_family == "Debian"
+    - enable_firewall | bool
+    - enable_ssl | bool
+  ignore_errors: yes
+
+#--------------------------------------------------------------
+# Security Hardening
+#--------------------------------------------------------------
+
+- name: Remove default Nginx page
+  ansible.builtin.file:
+    path: /var/www/html/index.nginx-debian.html
+    state: absent
+  when: web_server_type == "nginx"
+  ignore_errors: yes
+
+- name: Set secure permissions on web root
+  ansible.builtin.file:
+    path: "{{ web_root }}"
+    state: directory
+    owner: "{{ web_user }}"
+    group: "{{ web_group }}"
+    mode: '0755'
+    recurse: yes
+
+- name: Disable server tokens (hide version)
+  ansible.builtin.lineinfile:
+    path: /etc/nginx/nginx.conf
+    regexp: '^\s*#?\s*server_tokens'
+    line: '        server_tokens off;'
+    insertafter: 'http {'
+  when: web_server_type == "nginx"
+  notify: Reload Nginx
+
+#--------------------------------------------------------------
+# SSL/TLS Configuration (Optional)
+#--------------------------------------------------------------
+
+- name: Create SSL directory
+  ansible.builtin.file:
+    path: /etc/nginx/ssl
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+  when:
+    - web_server_type == "nginx"
+    - enable_ssl | bool
+
+- name: Generate self-signed SSL certificate
+  ansible.builtin.command:
+    cmd: >
+      openssl req -x509 -nodes -days 365 -newkey rsa:2048
+      -keyout /etc/nginx/ssl/server.key
+      -out /etc/nginx/ssl/server.crt
+      -subj "/C=US/ST=State/L=City/O={{ org_name }}/CN={{ ansible_fqdn }}"
+    creates: /etc/nginx/ssl/server.crt
+  when:
+    - web_server_type == "nginx"
+    - enable_ssl | bool
+    - use_self_signed_cert | bool
+  notify: Reload Nginx
+
+#--------------------------------------------------------------
+# Service State
+#--------------------------------------------------------------
+
+- name: Ensure Nginx is running and enabled
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: yes
+  when: web_server_type == "nginx"
+
+- name: Ensure Apache is running and enabled
+  ansible.builtin.service:
+    name: "{{ 'apache2' if ansible_os_family == 'Debian' else 'httpd' }}"
+    state: started
+    enabled: yes
+  when: web_server_type == "apache"
