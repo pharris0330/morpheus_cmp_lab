@@ -1,0 +1,18 @@
+stages:
+  - validate
+  - security-scan
+  - plan
+  - approve
+  - apply
+
+# Placeholder - full pipeline to be implemented
+validate-terraform:
+  stage: validate
+  image: hashicorp/terraform:latest
+  script:
+    - cd terraform/environments/dev
+    - terraform init -backend=false
+    - terraform validate
+  only:
+    - merge_requests
+    - main
