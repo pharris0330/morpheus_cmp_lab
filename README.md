@@ -2,46 +2,99 @@
 
 [![Infrastructure CI/CD Pipeline](https://github.com/YOUR_USERNAME/morpheus-cmp-lab/actions/workflows/infrastructure.yml/badge.svg)](https://github.com/YOUR_USERNAME/morpheus-cmp-lab/actions/workflows/infrastructure.yml)
 
-A comprehensive infrastructure automation lab demonstrating enterprise-grade practices for Cloud Management Platform (CMP) integration, Infrastructure as Code (IaC), and DevOps workflows.
+A comprehensive infrastructure automation lab demonstrating enterprise-grade Cloud Management Platform (CMP) integration, Infrastructure as Code (IaC), and DevOps workflows using **HPE Morpheus Enterprise**.
 
 ---
 
-## Overview
+## Executive Summary
 
-This lab showcases end-to-end automation capabilities for hybrid cloud infrastructure management, specifically designed to integrate with **Morpheus Data (HPE)** Cloud Management Platform. The project demonstrates proficiency in:
+This lab demonstrates end-to-end automation capabilities for hybrid cloud infrastructure management. Using Morpheus Community Edition, I successfully:
 
-- **Infrastructure as Code** using Terraform
-- **Configuration Management** using Ansible
-- **CI/CD Pipelines** using GitHub Actions
-- **ITSM Integration** with ServiceNow
-- **Security Scanning** and compliance validation
+- **Integrated AWS Cloud** and resolved IAM provisioning issues
+- **Provisioned EC2 instances** through Morpheus CMP
+- **Built automation workflows** with script and REST tasks
+- **Created CI/CD pipelines** with security scanning
+- **Developed ServiceNow CMDB integration** for ITSM workflows
+
+> "Using Morpheus Community Edition, I integrated AWS, resolved IAM provisioning failures, built automation tasks and workflows, and successfully provisioned EC2 instances through Morpheus while documenting CE limitations that prevent agent-based lifecycle automation."
 
 ---
 
-## Architecture
+## Architecture Overview
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        GitHub Actions CI/CD                         │
-│  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────────────┐ │
-│  │ Validate  │→ │ Security  │→ │   Plan    │→ │ Approve → Apply   │ │
-│  │           │  │   Scan    │  │           │  │                   │ │
-│  └───────────┘  └───────────┘  └───────────┘  └───────────────────┘ │
-└─────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        GitHub Actions CI/CD                              │
+│  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────────────────┐ │
+│  │ Validate  │→ │ Security  │→ │   Plan    │→ │ Approve → Apply       │ │
+│  │ TF + Ans  │  │ TFSec     │  │ TF Plan   │  │ Manual Gate           │ │
+│  └───────────┘  └───────────┘  └───────────┘  └───────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────┘
                                     │
                                     ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                         Morpheus CMP                                │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐                  │
-│  │  Instances  │  │  Workflows  │  │   Policies  │                  │
-│  └─────────────┘  └─────────────┘  └─────────────┘                  │
-└─────────────────────────────────────────────────────────────────────┘
-         │                   │                    │
-         ▼                   ▼                    ▼
-┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-│    VMware       │  │   ServiceNow    │  │    Ansible      │
-│    vSphere      │  │     CMDB        │  │  Configuration  │
-└─────────────────┘  └─────────────────┘  └─────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      HPE Morpheus Enterprise CMP                         │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐    │
+│  │   Clouds    │  │   Groups    │  │   Tasks     │  │  Workflows  │    │
+│  │   AWS-Lab   │  │ Automation  │  │ Nginx/REST  │  │ Provisioning│    │
+│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘    │
+└─────────────────────────────────────────────────────────────────────────┘
+         │                                              │
+         ▼                                              ▼
+┌─────────────────┐  ┌─────────────────┐  ┌─────────────────────────────┐
+│    AWS EC2      │  │   ServiceNow    │  │    Ansible Configuration   │
+│  Ubuntu 20.04   │  │   CMDB Sync     │  │    Nginx + Security        │
+└─────────────────┘  └─────────────────┘  └─────────────────────────────┘
 ```
+
+---
+
+## Lab Accomplishments
+
+### ☁️ Cloud Integration (AWS)
+
+| Component | Status | Details |
+|-----------|--------|---------|
+| AWS Cloud Added | ✅ Complete | `AWS-Lab` integrated with Morpheus |
+| Group Created | ✅ Complete | `Automation-Lab` for resource scoping |
+| EC2 Sync | ✅ Complete | Instance types, networks, subnets, security groups |
+| IAM Permissions | ✅ Resolved | Fixed `DescribeInstanceTypes` and `RunInstances` |
+| EC2 Provisioning | ✅ Success | Ubuntu 20.04 instance deployed |
+
+![Morpheus Dashboard](docs/screenshots/morpheus-dashboard.png)
+
+### ⚙️ Automation Components
+
+| Component | Name | Purpose |
+|-----------|------|---------|
+| Script Task | `Install-Nginx` | Installs Nginx, writes marker file |
+| REST Task | `Send-Provision-Notification` | Sends JSON webhook for ITSM integration |
+| Workflow | `Provisioning-Automation-Workflow` | Chains tasks for lifecycle automation |
+
+![Morpheus Tasks](docs/screenshots/morpheus-tasks.png)
+
+![Morpheus Workflow](docs/screenshots/morpheus-post-provision-automation-workflow.png)
+
+### 🖥️ Instance Provisioning
+
+Successfully provisioned AWS EC2 instances through Morpheus:
+
+- **Instance Type:** Ubuntu 20.04
+- **Cloud:** AWS-Lab
+- **Verification:** EC2 instance created, IPs assigned, compute details populated
+
+![Instance List](docs/screenshots/morpheus-instance-list.png)
+
+![Instance Review](docs/screenshots/morpheus-instance-review.png)
+
+### 🔐 RBAC & Governance
+
+Configured role-based access control demonstrating enterprise governance:
+
+![Roles Configuration](docs/screenshots/morpheus-roles.png)
+
+![User Permissions](docs/screenshots/morpheus-user-permissions.png)
+
+![Groups Permissions](docs/screenshots/morpheus-groups-permission.png)
 
 ---
 
@@ -61,67 +114,52 @@ morpheus-cmp-lab/
 │   │       └── outputs.tf
 │   └── environments/
 │       ├── dev/                  # Development environment
-│       │   ├── main.tf
-│       │   ├── variables.tf
-│       │   ├── terraform.tfvars
-│       │   ├── backend.tf
-│       │   └── outputs.tf
 │       └── prod/                 # Production environment
-│           ├── main.tf
-│           ├── variables.tf
-│           ├── terraform.tfvars
-│           ├── backend.tf
-│           └── outputs.tf
 ├── ansible/
-│   ├── ansible.cfg               # Ansible configuration
+│   ├── ansible.cfg
 │   ├── roles/
 │   │   ├── base-config/          # Base system configuration
 │   │   │   ├── tasks/main.yml
 │   │   │   ├── handlers/main.yml
 │   │   │   ├── defaults/main.yml
 │   │   │   └── templates/
-│   │   │       ├── sshd_config.j2
-│   │   │       └── motd.j2
-│   │   └── web-server/           # Nginx web server deployment
+│   │   └── web-server/           # Nginx with security hardening
 │   │       ├── tasks/main.yml
 │   │       ├── handlers/main.yml
 │   │       ├── defaults/main.yml
 │   │       └── templates/
-│   │           ├── nginx.conf.j2
-│   │           ├── default-site.conf.j2
-│   │           └── index.html.j2
 │   └── playbooks/
-│       ├── site.yml              # Main orchestration playbook
-│       └── inventory.example     # Example inventory file
+│       └── site.yml
 ├── scripts/
 │   └── servicenow_cmdb_sync.py   # CMDB validation script
-└── docs/                         # Additional documentation
+└── docs/
+    └── screenshots/              # Lab documentation
 ```
 
 ---
 
-## Components
+## CI/CD Pipeline
 
-### Terraform - Infrastructure as Code
+Multi-stage pipeline with security scanning and approval gates:
 
-**VMware VM Module** (`terraform/modules/vmware-vm/`)
+| Stage | Jobs | Status |
+|-------|------|--------|
+| **Validate** | Terraform validate, Ansible lint | ✅ Passing |
+| **Security** | TFSec, Checkov, Secrets scan, SAST | ✅ Passing |
+| **Plan** | Terraform plan (dev & prod) | ✅ Passing |
+| **Approve** | Manual approval gate | ✅ Configured |
+| **Apply** | Terraform apply, Ansible configure | ✅ Ready |
 
-Reusable module for provisioning virtual machines on VMware vSphere:
+![GitHub Pipeline](docs/screenshots/morpheus-github-pipeline.png)
 
-- Configurable CPU, memory, and disk sizing
-- Template-based cloning
-- Environment tagging
-- Network configuration
+---
 
-**Environment Configurations** (`terraform/environments/`)
+## Terraform Modules
 
-Separate configurations for dev and prod with:
+### VMware VM Module
 
-- Environment-specific sizing (dev: 2 CPU/2GB, prod: 4 CPU/8GB)
-- Isolated state management
-- Variable inheritance from modules
+Reusable module for VM provisioning:
 ```hcl
-# Example module usage
 module "web_server" {
   source = "../../modules/vmware-vm"
 
@@ -132,30 +170,40 @@ module "web_server" {
   vsphere_datacenter = var.vsphere_datacenter
   vsphere_cluster    = var.vsphere_cluster
   vsphere_template   = var.vsphere_template
+
+  tags = {
+    Environment = var.environment
+    ManagedBy   = "Terraform"
+  }
 }
 ```
 
+**Features:**
+- Configurable CPU, memory, disk sizing
+- Template-based cloning
+- Environment tagging
+- Multi-environment support (dev/prod)
+
 ---
 
-### Ansible - Configuration Management
+## Ansible Roles
 
-**Base Configuration Role** (`ansible/roles/base-config/`)
+### Base Configuration Role
 
 - System package installation
-- SSH hardening
-- Time synchronization (NTP/Chrony)
+- SSH hardening (key-only auth, root login disabled)
+- NTP/Chrony time synchronization
 - User and group management
 - Security baseline configuration
 
-**Web Server Role** (`ansible/roles/web-server/`)
+### Web Server Role
 
 - Nginx installation and configuration
-- SSL/TLS support (self-signed certificates)
-- Security headers implementation
+- SSL/TLS support with security headers
 - Health check endpoints
-- Firewall configuration
+- Firewall configuration (UFW)
+- Self-signed certificate generation
 ```yaml
-# Example playbook execution
 - name: Configure web servers
   hosts: webservers
   become: yes
@@ -169,49 +217,24 @@ module "web_server" {
 
 ---
 
-### CI/CD Pipeline - GitHub Actions
+## ServiceNow Integration
 
-**Pipeline Stages:**
-
-| Stage | Jobs | Purpose |
-|-------|------|---------|
-| **Validate** | terraform-validate-dev, terraform-validate-prod, ansible-lint | Syntax and format validation |
-| **Security Scan** | tfsec-scan, checkov-scan, secrets-scan, sast-scan | Security vulnerability detection |
-| **Plan** | terraform-plan-dev, terraform-plan-prod | Generate execution plans |
-| **Approve** | Manual approval gate | Human review before deployment |
-| **Apply** | terraform-apply, ansible-configure | Deploy and configure infrastructure |
-
-**Security Scanning Tools:**
-
-- **TFSec** - Terraform security scanner
-- **Checkov** - Infrastructure policy compliance
-- **TruffleHog** - Secrets detection
-- **Bandit** - Python SAST scanning
-
----
-
-### ServiceNow Integration
-
-**CMDB Validation Script** (`scripts/servicenow_cmdb_sync.py`)
-
-Validates that provisioned VMs are properly synchronized to ServiceNow CMDB:
+Python script for CMDB validation and incident management:
 ```bash
-# Run validation
-python scripts/servicenow_cmdb_sync.py \
-  --vm-name dev-web-01 \
-  --environment dev \
-  --expected-cpu 2 \
-  --expected-memory 4096
-
-# Demo mode (no API calls)
+# Demo mode
 python scripts/servicenow_cmdb_sync.py \
   --vm-name dev-web-01 \
   --environment dev \
   --demo
+
+# Production mode
+python scripts/servicenow_cmdb_sync.py \
+  --vm-name prod-web-01 \
+  --environment prod \
+  --expected-cpu 4
 ```
 
 **Features:**
-
 - CMDB record lookup and validation
 - Automated incident creation on sync failures
 - Configurable validation rules
@@ -219,39 +242,59 @@ python scripts/servicenow_cmdb_sync.py \
 
 ---
 
-## Morpheus CMP Integration
+## Troubleshooting Performed
 
-This lab is designed to integrate with Morpheus Data (HPE) Cloud Management Platform:
+Demonstrated real-world diagnostic capabilities:
 
-**Planned Integration Points:**
+### IAM Permission Issues
+- Identified missing `DescribeInstanceTypes` and `RunInstances` permissions
+- Used AWS CLI to reproduce and verify fixes
+- Successfully resolved for EC2 provisioning
 
-| Feature | Description |
-|---------|-------------|
-| **Cloud Integration** | VMware vSphere cloud connection |
-| **Instance Types** | Custom VM instance type definitions |
-| **Workflows** | Provisioning and operational workflows |
-| **Policies** | Approval, naming, and governance policies |
-| **RBAC** | Role-based access control configuration |
-| **ServiceNow Plugin** | CMDB sync and service catalog integration |
+### Networking
+- Analyzed SSH failures caused by missing key pairs
+- Verified security groups, VPC, and subnet configurations
 
-**Terraform Integration:**
-```hcl
-# Morpheus provider configuration
-terraform {
-  required_providers {
-    morpheus = {
-      source  = "gomorpheus/morpheus"
-      version = ">= 0.9.0"
-    }
-  }
-}
+### Morpheus CE Limitations
+Documented platform constraints:
+- Community Edition provisioning workflow limitations
+- Agent installation differences from Enterprise
+- Instance lifecycle state management
 
-provider "morpheus" {
-  url      = var.morpheus_url
-  username = var.morpheus_username
-  password = var.morpheus_password
-}
-```
+> This troubleshooting experience demonstrates the diagnostic skills needed for production CMP environments.
+
+---
+
+## Skills Demonstrated
+
+| Skill | Implementation |
+|-------|----------------|
+| Cloud Management Platform | Morpheus installation, configuration, AWS integration |
+| Infrastructure as Code | Terraform modules with dev/prod environments |
+| Configuration Management | Ansible roles with Jinja2 templates |
+| CI/CD Pipelines | GitHub Actions multi-stage with security scanning |
+| ITSM Integration | ServiceNow CMDB validation and incident creation |
+| Cloud Platforms | AWS EC2 provisioning, IAM troubleshooting |
+| Security Automation | TFSec, Checkov, SSH hardening, SAST scanning |
+| Python Scripting | REST API integration with error handling |
+| RBAC/Governance | Role-based access control, group policies |
+| DevOps Practices | GitOps, automated testing, approval gates |
+
+---
+
+## Morpheus Screenshots
+
+### Dashboard
+![Dashboard](docs/screenshots/morpheus-dashboard.png)
+
+### Instance Types
+![Instance Types](docs/screenshots/morpheus-instance-types.png)
+
+### Feature Access
+![Features](docs/screenshots/morpheus-feature.png)
+
+### Web Server Deployment
+![Web Server Deployment](docs/screenshots/morpheus-web-server-deployment.png)
 
 ---
 
@@ -262,9 +305,9 @@ provider "morpheus" {
 - Terraform >= 1.6.0
 - Ansible >= 2.15
 - Python >= 3.10
-- Git
+- HPE Morpheus Enterprise (Community Edition or higher)
 
-### Local Development
+### Quick Start
 ```bash
 # Clone repository
 git clone https://github.com/YOUR_USERNAME/morpheus-cmp-lab.git
@@ -284,86 +327,28 @@ cd ../scripts
 python servicenow_cmdb_sync.py --vm-name test-vm --environment dev --demo
 ```
 
-### Environment Variables
-
-For production use, configure the following:
-```bash
-# vSphere
-export TF_VAR_vsphere_password="your-password"
-
-# ServiceNow
-export SNOW_INSTANCE="your-instance.service-now.com"
-export SNOW_USERNAME="admin"
-export SNOW_PASSWORD="your-password"
-```
-
 ---
 
-## CI/CD Workflows
+## Interview Summary
 
-### Automatic Pipeline (Push/PR)
+### 20-Second Version
+> "I built a Morpheus automation lab with AWS integration, provisioned EC2 instances, and created CI/CD pipelines with Terraform and Ansible - demonstrating full-stack CMP automation skills."
 
-Triggered on push to `main` or `develop` branches:
+### 45-Second Version
+> "Using Morpheus Community Edition, I integrated AWS cloud, resolved IAM permission issues, and successfully provisioned EC2 instances. I built automation workflows combining shell scripts for Nginx installation with REST tasks for ServiceNow integration. The GitHub repository includes Terraform modules, Ansible roles with security hardening, and a CI/CD pipeline with security scanning - all passing validation."
 
-1. Validates all Terraform configurations
-2. Lints Ansible playbooks
-3. Runs security scans
-4. Generates Terraform plans
+### 90-Second Version
+> "I completed a comprehensive Morpheus CMP automation lab demonstrating enterprise-grade practices. Starting with Morpheus Community Edition installation, I integrated AWS cloud and resolved IAM provisioning failures for DescribeInstanceTypes and RunInstances permissions. I successfully provisioned Ubuntu EC2 instances through Morpheus and built automation workflows with script tasks for Nginx installation and REST tasks for webhook notifications.
 
-### Manual Deployment
+> The GitHub repository includes Terraform modules for VMware VM provisioning with separate dev/prod environments, Ansible roles implementing base configuration and web server deployment with security hardening, and a multi-stage CI/CD pipeline with TFSec and Checkov security scanning. I also developed a Python script for ServiceNow CMDB validation with automated incident creation.
 
-To deploy infrastructure:
-
-1. Go to **Actions** → **Deploy Infrastructure**
-2. Click **Run workflow**
-3. Select environment (`dev` or `prod`)
-4. Select action (`apply` or `destroy`)
-5. For production: Approve deployment in environment protection
-
----
-
-## Security Considerations
-
-- Credentials stored in GitHub Secrets (never in code)
-- Security scanning on every pipeline run
-- Manual approval gates for production deployments
-- SSH hardening in base configuration
-- TLS/SSL support for web servers
-- Secrets scanning with TruffleHog
-
----
-
-## Skills Demonstrated
-
-| Skill | Implementation |
-|-------|----------------|
-| Cloud Management Platform | Morpheus integration architecture |
-| Infrastructure as Code | Terraform modules and environments |
-| Configuration Management | Ansible roles with Jinja2 templates |
-| CI/CD Pipelines | GitHub Actions multi-stage workflow |
-| ITSM Integration | ServiceNow CMDB validation |
-| VMware vSphere | VM provisioning via Terraform |
-| Security Automation | TFSec, Checkov, SAST scanning |
-| Python Scripting | ServiceNow API integration |
-| API Integration | RESTful services with error handling |
-| DevOps Practices | GitOps, automated testing, approval gates |
-
----
-
-## Future Enhancements
-
-- [ ] Morpheus CMP live integration (pending Community Edition)
-- [ ] Dynamic Ansible inventory from Terraform outputs
-- [ ] Kubernetes deployment options
-- [ ] Cost management and reporting
-- [ ] Multi-cloud provider support (AWS, Azure)
-- [ ] Expanded ServiceNow integration (Change Management)
+> This lab demonstrates my understanding of CMP architecture, multi-cloud provisioning, IAM troubleshooting, workflow design, and infrastructure automation - exactly the skills needed for the CMP Automation Engineer role."
 
 ---
 
 ## Author
 
-Built as a technical demonstration for CMP Automation Engineer capabilities.
+Paul Harris - CMP Automation Engineer Candidate
 
 ---
 
