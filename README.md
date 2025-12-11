@@ -1,6 +1,6 @@
 # Morpheus CMP Automation Lab
 
-[![Infrastructure CI/CD Pipeline](https://github.com/YOUR_USERNAME/morpheus-cmp-lab/actions/workflows/infrastructure.yml/badge.svg)](https://github.com/YOUR_USERNAME/morpheus-cmp-lab/actions/workflows/infrastructure.yml)
+[![Infrastructure CI/CD Pipeline](https://github.com/your-actual-github-username/morpheus-cmp-lab/actions/workflows/infrastructure.yml/badge.svg)](https://github.com/your-actual-github-username/morpheus-cmp-lab/actions/workflows/infrastructure.yml)
 
 A comprehensive infrastructure automation lab demonstrating enterprise-grade Cloud Management Platform (CMP) integration, Infrastructure as Code (IaC), and DevOps workflows using **HPE Morpheus Enterprise**.
 
@@ -310,7 +310,7 @@ Documented platform constraints:
 ### Quick Start
 ```bash
 # Clone repository
-git clone https://github.com/YOUR_USERNAME/morpheus-cmp-lab.git
+git clone https://github.com/your-actual-github-username/morpheus-cmp-lab.git
 cd morpheus-cmp-lab
 
 # Validate Terraform
